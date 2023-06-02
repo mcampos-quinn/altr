@@ -1,0 +1,6 @@
+*.json
+config.py
+!sample_config.py
+./*
+.DS_Store
+__py*
