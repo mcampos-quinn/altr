@@ -1,13 +1,29 @@
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+import pathlib
 
+from bottle import route, run, template, request
 
-#https://fastapi.tiangolo.com/advanced/custom-response/?h=fileresponse#fileresponse
-@app.get("/get_alts/{type}/file_ids.txt")
-async def main():
-     # download the text file of rs ids and the alt file type (tbd, maybe set in url?)
-     # query rs for each alt
-     # download alts to temp folder
-     # zip them and return to user's browser
-     # clear temp folder
-    return FileResponse(some_file_path)
+import utils
+
+@route('/altr')
+def upload_list():
+
+    return template('templates/upload_list')
+
+@route('/show_result', method='POST')
+def show_result():
+    upload = request.files.get('upload')
+    file_ids = None
+    filepath = pathlib.Path('temp'+upload.filename)
+    if filepath.exists():
+        upload.save(filepath)
+        file_ids = utils.process_file(filepath)
+    else:
+        return template('templates/show_result', result=None, msg="You didn't upload a file?")
+    if not file_ids:
+        return template('templates/show_result', result=None, msg="Sorry there was a problem with your list file")
+    else:
+        utils.get_alts(file_ids)
+
+    return template('templates/show_result', result=filepath, msg="Success")
+
+run(host='localhost', port=8080, debug=True,reloader=True)

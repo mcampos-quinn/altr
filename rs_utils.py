@@ -6,7 +6,6 @@ import urllib
 import requests
 # local imports
 import config
-import cs_utils
 
 class RSpaceObject:
 	"""defines an object (resource) in resourcespace"""

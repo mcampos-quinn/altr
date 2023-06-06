@@ -1,6 +1,7 @@
 *.json
 config.py
 !sample_config.py
-./*
+temp/*
+!temp/.gitkeep
 .DS_Store
 __py*
