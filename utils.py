@@ -89,6 +89,7 @@ def make_zip(alts):
     work_dir.mkdir(parents=True, exist_ok=True)
     print(work_dir)
     for alt,details in alts.items():
+        alts[alt]['downloaded'] = False
         with requests.get(details['url'],stream=True) as r:
             if alts[alt]['orig_filename']:
                 fn = alts[alt]['orig_filename']
@@ -100,6 +101,8 @@ def make_zip(alts):
             with open(str(temp_path),'wb') as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
+            if pathlib.Path(temp_path).exists:
+                alts[alt]['downloaded'] = True
 
     zip_file = zipfile.ZipFile("temp/alternative_files.zip", "w")
     alt_files =  pathlib.Path(work_dir).glob('*.*')
@@ -108,3 +111,5 @@ def make_zip(alts):
         zip_file.write(file, compress_type=zipfile.ZIP_DEFLATED)
 
     shutil.rmtree(work_dir, ignore_errors=True)
+    print(alts)
+    return alts
