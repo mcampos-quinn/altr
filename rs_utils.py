@@ -57,31 +57,7 @@ class RSpaceRequest:
 		params = "&".join(["{}={}".format(k,v) for k,v in parameters.items()])
 		return params
 
-	def search_get_previews(self,search_string=None,resource_type=None,size=",".join(config.DERIVATIVE_SIZES)):
-		self.rs_api_function = "search_get_previews"
-		self.parameters = self.format_params({
-			"search":search_string,
-			"restypes":resource_type,
-			"getsizes":size
-			})
-		self.make_query()
-		response = self.post_query()
 
-		# print(response)
-
-		return response
-
-	def do_search(self, search_string=None, resource_type=None,size=None):
-		self.rs_api_function = "do_search"
-		self.parameters = self.format_params({
-			"search":search_string,
-			"restypes":resource_type,
-			"getsizes":size
-			})
-		self.make_query()
-		response = self.post_query()
-
-		return response
 
 	def get_resource_field_data(self,resource_id=None):
 		self.rs_api_function = "get_resource_field_data"

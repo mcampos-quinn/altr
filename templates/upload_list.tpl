@@ -3,10 +3,10 @@
 <p> <b>Hello upload a file</b></p>
 
 <label for="list_form">Choose an alt file type:</label>
-<select class="" name="" form="list_form">
+<select class="" name="alt_type" form="list_form">
   Choose an alt file type:
-  % for type,code in config.ALTERNATIVE_FILE_TYPES.items():
-    <option value="{{ code }}">{{type}}</option>
+  % for type in config.ALTERNATIVE_FILE_TYPES:
+    <option value="{{ type }}">{{type}}</option>
   % end
 </select>
 

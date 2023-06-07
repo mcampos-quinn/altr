@@ -1,6 +1,7 @@
+import os
 import pathlib
 
-from bottle import route, run, template, request
+from bottle import route, run, template, request, static_file
 
 import utils
 
@@ -9,21 +10,40 @@ def upload_list():
 
     return template('templates/upload_list')
 
+@route('/zip', method='GET')
+def get_zip():
+
+    return static_file('alternative_files.zip', root='temp')
+
 @route('/show_result', method='POST')
 def show_result():
     upload = request.files.get('upload')
-    file_ids = None
-    filepath = pathlib.Path('temp'+upload.filename)
-    if filepath.exists():
-        upload.save(filepath)
-        file_ids = utils.process_file(filepath)
-    else:
+    # print(upload)
+    alt_type = request.forms.get('alt_type')
+    # print(alt_type)
+    resource_ids = None
+    alts = None
+    filepath = None
+    save_path = 'temp/'
+    # print(save_path)
+    try:
+        filename = upload.filename
+        upload.save(save_path,overwrite=True)
+        filepath = os.path.join(save_path,filename)
+        print(filepath)
+    except:
         return template('templates/show_result', result=None, msg="You didn't upload a file?")
-    if not file_ids:
-        return template('templates/show_result', result=None, msg="Sorry there was a problem with your list file")
-    else:
-        utils.get_alts(file_ids)
 
-    return template('templates/show_result', result=filepath, msg="Success")
+    if os.path.isfile(filepath):
+        resource_ids = utils.process_list_file(filepath)
+        # print(resource_ids)
+        alts = utils.get_alts(alt_type,resource_ids)
+        zip_path = utils.make_zip(alts)
+
+    if not resource_ids:
+        return template('templates/show_result', result=None, msg="Sorry there was a problem with your list file")
+
+
+    return template('templates/show_result', result=alts, msg=zip_path)
 
 run(host='localhost', port=8080, debug=True,reloader=True)
