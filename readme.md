@@ -1,4 +1,4 @@
-# ALTR
+# 𖤐LTR
 
 This is a simple webapp to allow the selection and downloading of alternative files from ResourceSpace. The immediate use case is for staff who need to access cropped versions (at standardized pixel dimensions) of an original image for use in our program guide or website.
 

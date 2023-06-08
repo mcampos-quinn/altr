@@ -9,7 +9,7 @@
     <div class="container ml-4">
       <ul class="navbar-nav mb-2">
         <li class="nav-item">
-          <a class="nav-link active text-light fs-2" aria-current="page" href="/altr">ALTR</a>
+          <a class="nav-link active text-light fs-2" aria-current="page" href="/altr">𖤐LTR</a>
         </li>
       </ul>
     </div>
