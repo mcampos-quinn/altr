@@ -49,4 +49,7 @@ def show_result():
 
     return template('templates/show_result', alts=alts, msg="OK")
 
+# FOR PRODUCTION
+#app.run()
+# FOR DEV
 app.run(host='localhost', port=8080, debug=True,reloader=True)

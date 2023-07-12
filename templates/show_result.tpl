@@ -8,14 +8,19 @@
   <div class="row">
     % include('templates/alt_table.tpl',alts=alts)
     <div class="col-3">
-      <p> Here's your zip file:
-        <form class="form-control" action="/zip" method="get">
-          <button type="submit" class="btn btn-primary" value="Get files">
-            Get files
-          </button>
-        </form>
-      </p>
+      % if alts["zipfile"]:
+        <p> Here's your zip file:
+          <form class="form-control" action="/zip" method="get">
+            <button type="submit" class="btn btn-primary" value="Get files">
+              Get files
+            </button>
+          </form>
+        </p>
+      % end
     </div>
+  </div>
+  <div class="row">
+    <p>{{ msg }}</p>
   </div>
   % end
 </div>
