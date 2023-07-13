@@ -7,11 +7,11 @@
     </tr>
   </thead>
   <tbody>
-    % for k,v in alts.items():
+    % for k,v in results['alts'].items():
       <tr>
-        <th scope="row">{{ alts[k]['orig_filename'] }}</th>
-        <td>{{alts[k]['downloaded']}}</td>
-        <td>{{alts[k]['url']}}<td>
+        <th scope="row">{{ results['alts'][k]['orig_filename'] }}</th>
+        <td>{{results['alts'][k]['downloaded']}}</td>
+        <td>{{results['alts'][k]['url']}}<td>
       </tr>
     % end
  </tbody>

@@ -24,7 +24,7 @@ def show_result():
     alt_type = request.forms.get('alt_type')
     # print(alt_type)
     resource_ids = None
-    alts = None
+    results = None
     filepath = None
     save_path = 'temp/'
     # print(save_path)
@@ -39,15 +39,15 @@ def show_result():
     if os.path.isfile(filepath):
         resource_ids = utils.process_list_file(filepath)
         # print(resource_ids)
-        alts = utils.get_alts(alt_type,resource_ids)
+        results = utils.get_alts(alt_type,resource_ids)
         # alt_table = template('templates/alt_table', alts=alts)
-        alts = utils.make_zip(alts)
+        results = utils.make_zip(results)
 
     if not resource_ids:
-        return template('templates/show_result', result=None, msg="Sorry there was a problem with your list file")
+        return template('templates/show_result', results=None, msg="Sorry there was a problem with your list file")
 
 
-    return template('templates/show_result', alts=alts, msg="OK")
+    return template('templates/show_result', results=results, msg="")
 
 # FOR PRODUCTION
 #app.run()

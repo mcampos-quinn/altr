@@ -70,58 +70,58 @@ def get_orig_filename(resource, requester):
 def get_alts(alt_type,resource_ids):
     # this should get passed a list of resource ids from process_file()
     requester = rs_utils.RSpaceRequest()
-    alts = {}
+    results = {'zipfile':False}
+    results['alts'] = {}
     for resource in resource_ids:
-        alts[resource] = {"url":""}
-        alts[resource]['orig_filename'] = get_orig_filename(resource, requester)
+        results['alts'][resource] = {"url":""}
+        results['alts'][resource]['orig_filename'] = get_orig_filename(resource, requester)
         alt_ref,file_extension,name = get_alt_data(resource,alt_type,requester)
         if alt_ref:
-            alts[resource]['file_extension'] = file_extension
-            alts[resource]['name'] = name
+            results['alts'][resource]['file_extension'] = file_extension
+            results['alts'][resource]['name'] = name
             alt_url = get_alt_url(resource,alt_ref,requester)
-            alts[resource]['url'] = alt_url
+            results['alts'][resource]['url'] = alt_url
         else:
-            alts[resource]['url'] = \
-            alts[resource]['name'] = \
-            alts[resource]['file_extension'] = None
+            results['alts'][resource]['url'] = \
+            results['alts'][resource]['name'] = \
+            results['alts'][resource]['file_extension'] = None
 
-    print(alts)
-    return alts
+    # print(results)
+    return results
 
-def make_zip(alts):
+def make_zip(results):
     # print(alts)
-    alts['zipfile'] = False
     work_dir = pathlib.Path('temp/working_files')
     work_dir.mkdir(parents=True, exist_ok=True)
-    for alt,details in alts.items():
-        print(alts)
-        alts[alt]['downloaded'] = False
+    for alt,details in results['alts'].items():
+        print(alt)
+        results['alts'][alt]['downloaded'] = False
         if details['url']:
             with requests.get(details['url'],stream=True) as r:
-                if alts[alt]['orig_filename']:
-                    fn = alts[alt]['orig_filename']
+                if results['alts'][alt]['orig_filename']:
+                    fn = results['alts'][alt]['orig_filename']
                     path = pathlib.Path(fn)
                     stem = str(path.stem)
-                    name = re.sub(r"["+string.punctuation+string.whitespace+"]",'_',alts[alt]['name'])
-                    alt_name = f"{stem}_{name}.{alts[alt]['file_extension']}"
+                    name = re.sub(r"["+string.punctuation+string.whitespace+"]",'_',results['alts'][alt]['name'])
+                    alt_name = f"{stem}_{name}.{results['alts'][alt]['file_extension']}"
                     temp_path = work_dir / path.with_name(alt_name)
                 with open(str(temp_path),'wb') as f:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
                 if pathlib.Path(temp_path).exists:
-                    alts[alt]['downloaded'] = True
+                    results['alts'][alt]['downloaded'] = True
         else:
             details['url'] = "There wasn't an alternative file of the type you requested. Double check and try again?"
 
     zip_file = zipfile.ZipFile("temp/alternative_files.zip", "w")
     alt_files =  pathlib.Path(work_dir).glob('*.*')
     try:
-        for file in alt_files:
+        for file in next(alt_files):
             zip_file.write(file, compress_type=zipfile.ZIP_DEFLATED)
-        alts['zipfile'] = True
+        results['zipfile'] = True
     except:
         pass
 
     shutil.rmtree(work_dir, ignore_errors=True)
     # print(alts)
-    return alts
+    return results
