@@ -116,7 +116,8 @@ def make_zip(results):
     zip_file = zipfile.ZipFile("temp/alternative_files.zip", "w")
     alt_files =  pathlib.Path(work_dir).glob('*.*')
     try:
-        for file in next(alt_files):
+        print(next(alt_files))
+        for file in alt_files:
             zip_file.write(file, compress_type=zipfile.ZIP_DEFLATED)
         results['zipfile'] = True
     except:
