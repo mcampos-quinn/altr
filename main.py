@@ -5,7 +5,7 @@ from bottle import Bottle, route, run, template, request, static_file
 
 import utils
 
-app = Bottle()
+app = application = Bottle()
 
 @app.route('/altr')
 def upload_list():
@@ -50,7 +50,5 @@ def show_result():
 
     return template('templates/show_result', results=results, msg="")
 
-# FOR PRODUCTION
-#app.run()
-# FOR DEV
+# FOR DEV ONLY
 app.run(host='localhost', port=8080, debug=True,reloader=True)
