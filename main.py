@@ -32,7 +32,7 @@ def show_result():
         filename = upload.filename
         upload.save(save_path,overwrite=True)
         filepath = os.path.join(save_path,filename)
-        print(filepath)
+        # print(filepath)
     except:
         return template('templates/show_result', result=None, msg="You didn't upload a file?")
 
@@ -41,6 +41,7 @@ def show_result():
         # print(resource_ids)
         results = utils.get_alts(alt_type,resource_ids)
         # alt_table = template('templates/alt_table', alts=alts)
+        print(results)
         results = utils.make_zip(results)
 
     if not resource_ids:

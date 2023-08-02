@@ -19,6 +19,10 @@
       % end
     </div>
   </div>
+  % else:
+  <div class="row">
+    <p>Sorry, there were no alternative files for the images you selected :(</p>
+  </div>
   <div class="row">
     <p>{{ msg }}</p>
   </div>
