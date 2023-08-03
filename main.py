@@ -40,8 +40,7 @@ def show_result():
         resource_ids = utils.process_list_file(filepath)
         # print(resource_ids)
         results = utils.get_alts(alt_type,resource_ids)
-        # alt_table = template('templates/alt_table', alts=alts)
-        print(results)
+        # print(results)
         results = utils.make_zip(results)
 
     if not resource_ids:
@@ -50,5 +49,5 @@ def show_result():
 
     return template('templates/show_result', results=results, msg="")
 
-# FOR DEV ONLY
+# FOR DEV ONLY! FOR PRODUCTION COMMENT THIS LINE
 app.run(host='localhost', port=8080, debug=True,reloader=True)

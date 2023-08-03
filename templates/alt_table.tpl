@@ -9,18 +9,18 @@
   </thead>
   <tbody>
     % for k,v in results['alts'].items():
-      % if 'requested' in v:
       <tr>
         <th scope="row">{{ results['alts'][k]['orig_filename'] }}</th>
         <td>{{results['alts'][k]['downloaded']}}</td>
         <td>{{results['alts'][k]['note']}}<td>
         % if v['requested']:
-        <td>{{results['alts'][k]['url']}}<td>
+          <td>{{results['alts'][k]['url']}}<td>
+        % elif results['alts'][k]['url'] not in ("",None):
+          <td><a href="{{results['alts'][k]['url']}}">Direct link</a><td>
         % else:
-        <td><a href="{{results['alts'][k]['url']}}">Direct link</a><td>
+          <td></td>
         % end
       </tr>
-      % end
     % end
  </tbody>
 </table>

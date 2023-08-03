@@ -29,7 +29,7 @@ def get_alt_data(resource,alt_type,requester):
     requester.parameters = requester.format_params({"resource":resource,"type":alt_type})
     requester.make_query()
     response = requester.post_query()
-    print(response)
+    # print(response)
     if response:
         alt_ref = response[0]['ref']
         file_extension = response[0]['file_extension']
@@ -43,7 +43,7 @@ def get_alt_data(resource,alt_type,requester):
         if response and len(response) > 1:
             result = []
             for item in response:
-                print(item)
+                # print(item)
                 alt_ref = item['ref']
                 file_extension = item['file_extension']
                 name = item['name']
@@ -93,9 +93,13 @@ def get_alts(alt_type,resource_ids):
     # this should get passed a list of resource ids from process_file()
     requester = rs_utils.RSpaceRequest()
     results = {}
+    # if there are alts of a type other than what's requested we need to pop the
+    # original dict from the results bc the different types get their own keys/entries
+    # and the originals are listed here
+    to_pop = []
     results['alts'] = {}
     for resource in resource_ids:
-        results['alts'][resource] = {"url":""}
+        results['alts'][resource] = {"url":"","downloaded":False,"note":"","requested":False}
         results['alts'][resource]['orig_filename'] = get_orig_filename(resource, requester)
         # alt_ref,file_extension,name = get_alt_data(resource,alt_type,requester)
         alt_data = get_alt_data(resource,alt_type,requester)
@@ -112,9 +116,11 @@ def get_alts(alt_type,resource_ids):
                     break
         elif alt_data != None:
             counter = 1
+            to_pop.append(resource)
             for item in alt_data:
                 alt_url = get_alt_url(resource,item['ref'],requester)
-                results['alts'][str(resource)+" "+str(counter)] = {}
+                # give each non-requested alt type its own dict based on the original
+                results['alts'][str(resource)+" "+str(counter)] = {"downloaded":False}
                 results['alts'][str(resource)+" "+str(counter)]['url'] = alt_url
                 results['alts'][str(resource)+" "+str(counter)]['file_extension'] = item['ext']
                 results['alts'][str(resource)+" "+str(counter)]['name'] = item['name']
@@ -126,20 +132,26 @@ def get_alts(alt_type,resource_ids):
             results['alts'][resource]['url'] = \
             results['alts'][resource]['name'] = \
             results['alts'][resource]['file_extension'] = None
-
+    if to_pop != []:
+        # now if there are any extraneous resource listings, remove them from
+        # the results
+        try:
+            for resource in to_pop:
+                results['alts'].pop(resource)
+        except:
+            pass
     # print(results)
     return results
 
 def make_zip(results):
-    # print(alts)
+    # print(results)
     results['zipfile']=False
-    print(results)
+    # print(results)
     work_dir = pathlib.Path('temp/working_files')
     work_dir.mkdir(parents=True, exist_ok=True)
     for alt,details in results['alts'].items():
         if details['url'] in ('',False,None):
             continue
-        results['alts'][alt]['downloaded'] = False
         if details['requested'] == True:
             with requests.get(details['url'],stream=True) as r:
                 if results['alts'][alt]['orig_filename']:
@@ -154,19 +166,14 @@ def make_zip(results):
                         f.write(chunk)
                 if pathlib.Path(temp_path).exists:
                     results['alts'][alt]['downloaded'] = True
-        # else:
-            # details['url'] = "There wasn't an alternative file of the type you requested. Double check and try again?"
 
-    zip_file = zipfile.ZipFile("temp/alternative_files.zip", "w")
-    alt_files =  pathlib.Path(work_dir).glob('*.*')
-    try:
-        print(next(alt_files))
-        for file in alt_files:
-            zip_file.write(file, compress_type=zipfile.ZIP_DEFLATED)
+    alt_files = [x for x in pathlib.Path(work_dir).glob('*.*')]
+    if alt_files != []:
+        with zipfile.ZipFile("temp/alternative_files.zip", "w") as zip_file:
+            for file in alt_files:
+                if file.is_file():
+                    zip_file.write(file, compress_type=zipfile.ZIP_DEFLATED,arcname=file.name)
         results['zipfile'] = True
-    except:
-        pass
-
     shutil.rmtree(work_dir, ignore_errors=True)
     # print(alts)
     return results
